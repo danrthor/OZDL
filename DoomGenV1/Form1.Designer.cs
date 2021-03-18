@@ -35,10 +35,12 @@ namespace DoomGenV1
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.DoomExeTextBox = new System.Windows.Forms.TextBox();
+            this.IwadTextBox = new System.Windows.Forms.TextBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.button21 = new System.Windows.Forms.Button();
             this.button20 = new System.Windows.Forms.Button();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.radioButton5 = new System.Windows.Forms.RadioButton();
@@ -78,13 +80,14 @@ namespace DoomGenV1
             this.checkBox4 = new System.Windows.Forms.CheckBox();
             this.button6 = new System.Windows.Forms.Button();
             this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
+            this.button22 = new System.Windows.Forms.Button();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
             this.button18 = new System.Windows.Forms.Button();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.button21 = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage4.SuspendLayout();
@@ -94,7 +97,7 @@ namespace DoomGenV1
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(592, 184);
+            this.button1.Location = new System.Drawing.Point(592, 190);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(112, 57);
             this.button1.TabIndex = 0;
@@ -124,27 +127,27 @@ namespace DoomGenV1
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // textBox2
+            // DoomExeTextBox
             // 
-            this.textBox2.AcceptsReturn = true;
-            this.textBox2.AllowDrop = true;
-            this.textBox2.Location = new System.Drawing.Point(170, 48);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(534, 23);
-            this.textBox2.TabIndex = 21;
-            this.textBox2.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox2_DragDrop);
-            this.textBox2.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox2_DragEnter);
+            this.DoomExeTextBox.AcceptsReturn = true;
+            this.DoomExeTextBox.AllowDrop = true;
+            this.DoomExeTextBox.Location = new System.Drawing.Point(170, 48);
+            this.DoomExeTextBox.Name = "DoomExeTextBox";
+            this.DoomExeTextBox.Size = new System.Drawing.Size(534, 23);
+            this.DoomExeTextBox.TabIndex = 21;
+            this.DoomExeTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox2_DragDrop);
+            this.DoomExeTextBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox2_DragEnter);
             // 
-            // textBox3
+            // IwadTextBox
             // 
-            this.textBox3.AllowDrop = true;
-            this.textBox3.Location = new System.Drawing.Point(170, 16);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(534, 23);
-            this.textBox3.TabIndex = 22;
-            this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
-            this.textBox3.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox3_DragDrop);
-            this.textBox3.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox3_DragEnter);
+            this.IwadTextBox.AllowDrop = true;
+            this.IwadTextBox.Location = new System.Drawing.Point(170, 16);
+            this.IwadTextBox.Name = "IwadTextBox";
+            this.IwadTextBox.Size = new System.Drawing.Size(534, 23);
+            this.IwadTextBox.TabIndex = 22;
+            this.IwadTextBox.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
+            this.IwadTextBox.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox3_DragDrop);
+            this.IwadTextBox.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox3_DragEnter);
             // 
             // tabControl1
             // 
@@ -162,6 +165,7 @@ namespace DoomGenV1
             // tabPage1
             // 
             this.tabPage1.AllowDrop = true;
+            this.tabPage1.Controls.Add(this.checkBox2);
             this.tabPage1.Controls.Add(this.button21);
             this.tabPage1.Controls.Add(this.button20);
             this.tabPage1.Controls.Add(this.radioButton4);
@@ -176,8 +180,8 @@ namespace DoomGenV1
             this.tabPage1.Controls.Add(this.button5);
             this.tabPage1.Controls.Add(this.button7);
             this.tabPage1.Controls.Add(this.button2);
-            this.tabPage1.Controls.Add(this.textBox2);
-            this.tabPage1.Controls.Add(this.textBox3);
+            this.tabPage1.Controls.Add(this.DoomExeTextBox);
+            this.tabPage1.Controls.Add(this.IwadTextBox);
             this.tabPage1.Controls.Add(this.button3);
             this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
@@ -188,6 +192,26 @@ namespace DoomGenV1
             this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
             this.tabPage1.Click += new System.EventHandler(this.tabPage1_Click_1);
+            // 
+            // checkBox2
+            // 
+            this.checkBox2.AutoSize = true;
+            this.checkBox2.Location = new System.Drawing.Point(556, 92);
+            this.checkBox2.Name = "checkBox2";
+            this.checkBox2.Size = new System.Drawing.Size(151, 19);
+            this.checkBox2.TabIndex = 46;
+            this.checkBox2.Text = "Enable Oblige/Obsidian";
+            this.checkBox2.UseVisualStyleBackColor = true;
+            // 
+            // button21
+            // 
+            this.button21.Location = new System.Drawing.Point(202, 251);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(75, 23);
+            this.button21.TabIndex = 45;
+            this.button21.Text = "Load Test";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.button21_Click);
             // 
             // button20
             // 
@@ -228,7 +252,7 @@ namespace DoomGenV1
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(443, 280);
+            this.checkBox1.Location = new System.Drawing.Point(442, 280);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(143, 19);
             this.checkBox1.TabIndex = 40;
@@ -258,7 +282,7 @@ namespace DoomGenV1
             // 
             // button12
             // 
-            this.button12.Location = new System.Drawing.Point(600, 113);
+            this.button12.Location = new System.Drawing.Point(603, 133);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(104, 31);
             this.button12.TabIndex = 35;
@@ -310,7 +334,7 @@ namespace DoomGenV1
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(592, 247);
+            this.button7.Location = new System.Drawing.Point(591, 251);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(112, 55);
             this.button7.TabIndex = 23;
@@ -356,10 +380,13 @@ namespace DoomGenV1
             // 
             // textBox5
             // 
+            this.textBox5.AllowDrop = true;
             this.textBox5.Location = new System.Drawing.Point(297, 249);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(407, 23);
             this.textBox5.TabIndex = 39;
+            this.textBox5.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox5_DragDrop);
+            this.textBox5.DragEnter += new System.Windows.Forms.DragEventHandler(this.textBox5_DragEnter);
             // 
             // button15
             // 
@@ -395,6 +422,7 @@ namespace DoomGenV1
             this.button13.TabIndex = 35;
             this.button13.Text = "Remove Obsidian/Oblige Exe";
             this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // label5
             // 
@@ -407,7 +435,7 @@ namespace DoomGenV1
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(3, 179);
+            this.button11.Location = new System.Drawing.Point(0, 179);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(159, 23);
             this.button11.TabIndex = 33;
@@ -471,6 +499,7 @@ namespace DoomGenV1
             this.button8.TabIndex = 23;
             this.button8.Text = "Open Configs Folder";
             this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
             // 
             // radioButton3
             // 
@@ -600,6 +629,8 @@ namespace DoomGenV1
             // 
             // tabPage5
             // 
+            this.tabPage5.Controls.Add(this.label8);
+            this.tabPage5.Controls.Add(this.button22);
             this.tabPage5.Controls.Add(this.textBox6);
             this.tabPage5.Controls.Add(this.label7);
             this.tabPage5.Controls.Add(this.button18);
@@ -607,8 +638,26 @@ namespace DoomGenV1
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Size = new System.Drawing.Size(710, 306);
             this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "tabPage5";
+            this.tabPage5.Text = "Options";
             this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(183, 250);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(110, 15);
+            this.label8.TabIndex = 4;
+            this.label8.Text = "Campaign Count: 0";
+            // 
+            // button22
+            // 
+            this.button22.Location = new System.Drawing.Point(3, 250);
+            this.button22.Name = "button22";
+            this.button22.Size = new System.Drawing.Size(174, 23);
+            this.button22.TabIndex = 3;
+            this.button22.Text = "Reset Campaign Count";
+            this.button22.UseVisualStyleBackColor = true;
             // 
             // textBox6
             // 
@@ -647,16 +696,6 @@ namespace DoomGenV1
             // 
             this.toolTip1.Popup += new System.Windows.Forms.PopupEventHandler(this.toolTip1_Popup);
             // 
-            // button21
-            // 
-            this.button21.Location = new System.Drawing.Point(202, 251);
-            this.button21.Name = "button21";
-            this.button21.Size = new System.Drawing.Size(75, 23);
-            this.button21.TabIndex = 45;
-            this.button21.Text = "Load Test";
-            this.button21.UseVisualStyleBackColor = true;
-            this.button21.Click += new System.EventHandler(this.button21_Click);
-            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -667,6 +706,7 @@ namespace DoomGenV1
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
             this.Text = " OZDL Oblige/Obsidian Zdoom Launcher";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
@@ -686,8 +726,8 @@ namespace DoomGenV1
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox DoomExeTextBox;
+        private System.Windows.Forms.TextBox IwadTextBox;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage3;
@@ -736,6 +776,9 @@ namespace DoomGenV1
         private System.Windows.Forms.RadioButton radioButton5;
         private System.Windows.Forms.Button button20;
         private System.Windows.Forms.Button button21;
+        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button button22;
     }
 }
 

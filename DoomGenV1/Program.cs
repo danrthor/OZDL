@@ -8,10 +8,13 @@ using System.Windows.Forms;
 class DeclareVars
 {
     public string WriteString = "";
-    
+
     public string IwadString = "";
     public string DoomString = "";
     public string MusicString = "";
+    public int CampCount = 0;
+
+    public string cPath = "CampaignCount.txt";
 
     public DeclareVars()
     {
