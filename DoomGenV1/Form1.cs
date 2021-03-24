@@ -28,8 +28,15 @@ namespace DoomGenV1
             IwadTextBox.Text = Properties.Settings.Default.IWadSet;
             DoomExeTextBox.Text = Properties.Settings.Default.DoomSet;
 
+            textBox5.Text = Properties.Settings.Default.ConfigPoolFolder;
+            textBox4.Text = Properties.Settings.Default.ConfigFileSet;
+
+            radioButton1.Checked = Properties.Settings.Default.ConfigFile;
+            radioButton2.Checked = Properties.Settings.Default.ConfigPool;
 
             comboBox1.SelectedIndex = Properties.Settings.Default.LengthSet;
+
+            checkBox2.Checked = Properties.Settings.Default.ObligeEnabled;
 
             foreach (object item in Properties.Settings.Default.AlwaysWadSet)
             {
@@ -45,9 +52,34 @@ namespace DoomGenV1
 
             }
 
+            foreach (object item in Properties.Settings.Default.MusicWadSet)
+            {
+
+                listBox4.Items.Add(item);
+
+            }
+
             if (!Directory.Exists("Campaigns"))
             {
                 System.IO.Directory.CreateDirectory("Campaigns");
+            }
+
+            DeclareVars frm1 = new DeclareVars();
+            int CampC = 0;
+            if (File.Exists(frm1.cPath))
+            {
+                var CampCount = File.ReadAllText(frm1.cPath);
+                CampC = Int32.Parse(CampCount);
+                label8.Text = "Campaign Count: " + CampC.ToString();
+            }
+
+            else
+            {
+
+                System.IO.StreamWriter SaveFile1 = new System.IO.StreamWriter(frm1.cPath);
+                SaveFile1.WriteLine("0");
+                SaveFile1.Close();
+
             }
 
         }
@@ -81,6 +113,20 @@ namespace DoomGenV1
             string CurrentDir = Directory.GetCurrentDirectory();
             string text =
             "my name is " + "\n" + "dan";
+
+            string scriptgen = "IwadStr = \"" + IwadTextBox.Text + "\"\n";
+            scriptgen += "DoomStr = \"" + DoomExeTextBox.Text + "\"\n";
+            scriptgen += "Dim FSO \n" + "Set FSO = CreateObject(\"Scripting.FileSystemObject\")\n";
+            scriptgen += "CurrentDirectory = FSO.GetAbsolutePathName(\".\")\n";
+            scriptgen += "GenBat = FSO.BuildPath(CurrentDirectory, \"\\GenerateLevels.bat\")\n";
+            scriptgen += "outFile=GenBat\n";
+            scriptgen += "Set objFile = FSO.CreateTextFile(outFile,True)\n";
+            scriptgen += "objFile.Write \"\"\"" + DoomExeTextBox.Text + "\"\"\"\n";
+            scriptgen += "objFile.Close\n";
+            scriptgen += "Set shell = CreateObject(\"WScript.Shell\")\n";
+            scriptgen += "shell.Run \"GenerateLevels.bat\"";
+            File.WriteAllTextAsync(CurrentDir + @"\Level Gen\" + "GenShortcut.vbs", scriptgen);
+            System.Diagnostics.Process.Start(@"cscript" + CurrentDir + @"\Level Gen\" + "GenShortcut.vbs");
             File.WriteAllTextAsync(CurrentDir + @"\Level Gen\" + "WriteText.bat", text);
         }
 
@@ -274,11 +320,13 @@ namespace DoomGenV1
             //SaveFile.WriteLine("0");
             //SaveFile.Close();
             DeclareVars frm1 = new DeclareVars();
+
             int CampC = 0;
             if (File.Exists(frm1.cPath))
             {
                 var CampCount = File.ReadAllText(frm1.cPath);
                 CampC = Int32.Parse(CampCount);
+                //label8.Text = "Campaign Count: " + CampC.ToString();
             }
 
             else
@@ -319,6 +367,11 @@ namespace DoomGenV1
 
             string ObConfigPath = "";
 
+            if (radioButton1.Checked == true)
+            {
+                ObConfigPath = "--load \"" + textBox4.Text + "\"";
+            }
+
             if (radioButton2.Checked == true) {
                 var rand = new Random();
                 var files = Directory.GetFiles(textBox5.Text, "*.txt");
@@ -329,6 +382,7 @@ namespace DoomGenV1
             string CurrentDir = Directory.GetCurrentDirectory();
             string ObString = "";
             string CampPath = "";
+
             if (listBox3.Items.Count > 0)
             {
                 ObString += "\"";
@@ -336,16 +390,60 @@ namespace DoomGenV1
                 int ObExe = random.Next(0, listBox3.Items.Count);
                 ObString += listBox3.Items[ObExe].ToString();
                 //MessageBox.Show(listBox3.Items[ObExe].ToString());
-                ObString += "\" --batch \"" + campFolder + "\\Campaign " + CampC.ToString() +  ".wad\" " + ObConfigPath + " " + ObLength + "\n";
+                ObString += "\" --batch \"" + campFolder + "\\Campaign " + CampC.ToString() + ".wad\" " + ObConfigPath + " " + ObLength + "\n";
             }
+
+
+
+            ////////////////////////////////////////////Music/////////////////////////////
+            string MusicString = "";
+            if (listBox4.Items.Count > 0)
+            {
+                MusicString += "\"";
+                var random = new Random();
+                if (checkBox3.Checked == true)
+                {
+                    int ObExe = random.Next(0, listBox4.Items.Count + 1);
+                    if (ObExe == listBox4.Items.Count + 1)
+                    {
+                        MusicString = "";
+                    }
+                    else
+                    {
+                        MusicString += listBox4.Items[ObExe].ToString() + "\" ";
+                    }
+                }
+                else
+                {
+                    int ObExe = random.Next(0, listBox3.Items.Count);
+                    MusicString += listBox4.Items[ObExe].ToString() + "\" ";
+                }
+            }
+            ////////////////////////////////////////////////////////////////////////////////////////
+
             CampPath = Path.GetFullPath(campFolder + "\\Campaign " + CampC.ToString() + ".wad");
+
+            if (checkBox2.Checked == false)
+            {
+                ObString = "";
+                CampPath = "";
+            }
+
+            ////Save Folder///////////////////////////////////////
+            ///
+            string savePath = "";
+            if (radioButton5.Checked == true) { 
+            savePath = "+set save_path " + "\"" + campFolder + "\"" + " +save_dir " + "\"" + campFolder + "\"";
+            }
+
             //string text =
             // "my name is " + "\n" + "dan";
-                string wads = "\"" + IwadTextBox.Text + "\" " + "\"" + CampPath + "\" ";
+            string iwadstr = " -iwad \"" + IwadTextBox.Text + "\"";
+            string wads = "\"" + CampPath + "\" ";
             string DoomEXE = "\"" + DoomExeTextBox.Text + "\"";
             string allItems = string.Join("\" \"", listBox1.Items.OfType<object>());
             wads += "\"" + allItems + "\"";
-            string writeString = ObString + DoomEXE + " -file " + wads;
+            string writeString = ObString + DoomEXE + iwadstr + " -file " + wads + " " + MusicString + " " + savePath;
             File.WriteAllTextAsync(CurrentDir + @"\Level Gen\" + "DoomGen.bat", writeString);
             System.Diagnostics.Process.Start(CurrentDir + @"\Level Gen\" + "DoomGen.bat");
 
@@ -388,14 +486,25 @@ namespace DoomGenV1
                     //MessageBox.Show(fbd.SelectedPath);
                     DeclareVars frm1 = new DeclareVars();
                     frm1.MusicString = fbd.SelectedPath;
-                    textBox1.Text = frm1.MusicString;
+                    //textBox1.Text = frm1.MusicString;
                 }
             }
         }
 
         private void button14_Click(object sender, EventArgs e)
         {
+            //listBox1.Text = "yoyoyo"; //Convert.ToString(dr);
+            //using (var fbd =  openFileDialog1())
+            OpenFileDialog choofdlog = new OpenFileDialog();
+            choofdlog.Filter = "All Files (*.*)|*.*";
+            choofdlog.FilterIndex = 1;
+            choofdlog.Multiselect = true;
 
+            if (choofdlog.ShowDialog() == DialogResult.OK)
+            {
+                textBox4.Text = choofdlog.FileName;
+                //textBox4.Text = sFileName;   
+            }
         }
 
         private void comboBox1_SelectedIndexChanged_1(object sender, EventArgs e)
@@ -576,6 +685,9 @@ namespace DoomGenV1
                     }
                 }
             }
+
+
+
         }
 
         private void button13_Click(object sender, EventArgs e)
@@ -587,33 +699,6 @@ namespace DoomGenV1
                 //listBox2.Items.Add(listBox1.Items[idx]);
                 listBox3.Items.RemoveAt(idx);
             }
-        }
-
-        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Properties.Settings.Default.IWadSet = IwadTextBox.Text;
-            Properties.Settings.Default.DoomSet = DoomExeTextBox.Text;
-            Properties.Settings.Default.LengthSet = comboBox1.SelectedIndex;
-
-            //Properties.Settings.Default.Save();
-
-            Properties.Settings.Default.AlwaysWadSet.Clear();
-
-            foreach (object item in listBox1.Items)
-
-            {
-                Properties.Settings.Default.AlwaysWadSet.Add(Convert.ToString(item));
-            }
-
-            Properties.Settings.Default.ObligeSet.Clear();
-
-            foreach (object item in listBox3.Items)
-
-            {
-                Properties.Settings.Default.ObligeSet.Add(Convert.ToString(item));
-            }
-
-            Properties.Settings.Default.Save();
         }
 
         private void textBox5_DragEnter(object sender, DragEventArgs e)
@@ -647,6 +732,183 @@ namespace DoomGenV1
                     textBox5.Text = fbd.SelectedPath;
                 }
             }
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Properties.Settings.Default.IWadSet = IwadTextBox.Text;
+            Properties.Settings.Default.DoomSet = DoomExeTextBox.Text;
+            Properties.Settings.Default.LengthSet = comboBox1.SelectedIndex;
+
+            Properties.Settings.Default.ConfigPool = radioButton2.Checked;
+            Properties.Settings.Default.ConfigPoolFolder = textBox5.Text;
+            Properties.Settings.Default.ConfigFileSet = textBox4.Text;
+            Properties.Settings.Default.ConfigFile = radioButton1.Checked;
+
+            Properties.Settings.Default.ObligeEnabled = checkBox2.Checked;
+
+            //Properties.Settings.Default.Save();
+
+            Properties.Settings.Default.AlwaysWadSet.Clear();
+
+            foreach (object item in listBox1.Items)
+
+            {
+                Properties.Settings.Default.AlwaysWadSet.Add(Convert.ToString(item));
+            }
+
+            Properties.Settings.Default.ObligeSet.Clear();
+
+            foreach (object item in listBox3.Items)
+
+            {
+                Properties.Settings.Default.ObligeSet.Add(Convert.ToString(item));
+            }
+
+            Properties.Settings.Default.MusicWadSet.Clear();
+
+            foreach (object item in listBox4.Items)
+
+            {
+                Properties.Settings.Default.MusicWadSet.Add(Convert.ToString(item));
+            }
+
+            Properties.Settings.Default.Save();
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            //listBox1.Text = "yoyoyo"; //Convert.ToString(dr);
+            //using (var fbd =  openFileDialog1())
+            OpenFileDialog choofdlog = new OpenFileDialog();
+            choofdlog.Filter = "All Files (*.*)|*.*";
+            choofdlog.FilterIndex = 1;
+            choofdlog.Multiselect = true;
+
+            if (choofdlog.ShowDialog() == DialogResult.OK)
+            {
+                string sFileName = choofdlog.FileName;
+                string[] arrAllFiles = choofdlog.FileNames; //used when Multiselect = true
+                //listBox1.Items.Add(sFileName);
+                for (int i = 0; i < arrAllFiles.Length; i++)
+                {
+                    listBox4.Items.Add(arrAllFiles[i]);
+                }
+            }
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            for (int x = listBox4.SelectedIndices.Count - 1; x >= 0; x--)
+            {
+                int idx = listBox4.SelectedIndices[x];
+                //listBox2.Items.Add(listBox1.Items[idx]);
+                listBox4.Items.RemoveAt(idx);
+            }
+        }
+
+        private void button23_Click(object sender, EventArgs e)
+        {
+            string allMusic = string.Join("\" \"", listBox4.Items.OfType<object>());
+        }
+
+        private void button19_Click(object sender, EventArgs e)
+        {
+            if (listBox3.SelectedIndex == -1) {
+                MessageBox.Show("Please select an Oblige/Obsidian/Slige version");
+            }
+            else { 
+            System.Diagnostics.Process.Start(listBox3.SelectedItem.ToString());
+            }
+        }
+
+        private void listBox4_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+                e.Effect = DragDropEffects.All;
+            else
+                e.Effect = DragDropEffects.None;
+        }
+
+        private void listBox4_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] s = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            int i;
+            for (i = 0; i < s.Length; i++)
+                listBox4.Items.Add((s[i]));
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button22_Click(object sender, EventArgs e)
+        {
+            DeclareVars frm1 = new DeclareVars();
+            System.IO.StreamWriter SaveFile1 = new System.IO.StreamWriter(frm1.cPath);
+            SaveFile1.WriteLine("0");
+            SaveFile1.Close();
+            label8.Text = "Campaign Count: 0";
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox2.Checked == false)
+            {
+                if (tabControl1.TabPages.Contains(tabPage4))
+                { tabControl1.TabPages.Remove(tabPage4); }
+            }
+            else
+            {
+                if (tabControl1.TabPages.Contains(tabPage4)) {
+                    
+                }
+                else { tabControl1.TabPages.Insert(1, tabPage4); }
+            }
+        }
+
+        private void button25_Click(object sender, EventArgs e)
+        {
+            string line;
+            Stream myStream = null;
+
+            // Read the file and display it line by line.  
+            OpenFileDialog f = new OpenFileDialog();
+            if (f.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    if ((myStream = f.OpenFile()) != null)
+                    {
+                        using (myStream)
+                        {
+                            System.IO.StreamReader file =
+                            new System.IO.StreamReader(myStream);
+                            while ((line = file.ReadLine()) != null)
+                            {
+                                //MessageBox.Show(line);
+                                var result = line.Substring(line.IndexOf('=')+1);
+                                MessageBox.Show(result);
+                                //System.Console.WriteLine(line);
+
+                            }
+                            file.Close();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
+                }
+            }
+
+            
         }
     }
 }
