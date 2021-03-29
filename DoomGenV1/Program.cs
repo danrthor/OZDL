@@ -22,6 +22,11 @@ class DeclareVars
 }
 
 
+
+
+
+
+
 namespace DoomGenV1
 {
     static class Program

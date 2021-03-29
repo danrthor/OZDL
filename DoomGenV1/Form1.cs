@@ -8,8 +8,8 @@ using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-
+//using IWshRuntimeLibrary;
+using shrtcut = IWshRuntimeLibrary;
 
 
 
@@ -31,12 +31,16 @@ namespace DoomGenV1
             textBox5.Text = Properties.Settings.Default.ConfigPoolFolder;
             textBox4.Text = Properties.Settings.Default.ConfigFileSet;
 
+            checkBox6.Checked = Properties.Settings.Default.MakeShrtCt;
+
             radioButton1.Checked = Properties.Settings.Default.ConfigFile;
             radioButton2.Checked = Properties.Settings.Default.ConfigPool;
 
             comboBox1.SelectedIndex = Properties.Settings.Default.LengthSet;
 
             checkBox2.Checked = Properties.Settings.Default.ObligeEnabled;
+
+            cmdAdd.Text = Properties.Settings.Default.AdditionalCmds;
 
             foreach (object item in Properties.Settings.Default.AlwaysWadSet)
             {
@@ -81,8 +85,45 @@ namespace DoomGenV1
                 SaveFile1.Close();
 
             }
+            if (checkBox2.Checked == false)
+            {
+                if (tabControl1.TabPages.Contains(tabPage4))
+                { tabControl1.TabPages.Remove(tabPage4); }
+            }
+            else
+            {
+                if (tabControl1.TabPages.Contains(tabPage4))
+                {
 
+                }
+                else { tabControl1.TabPages.Insert(1, tabPage4); }
+            }
+            if (IwadTextBox.Text != "")
+            {
+                long length = new System.IO.FileInfo(IwadTextBox.Text).Length;
+                if (length > 14000000)
+                {
+                   // MessageBox.Show("Iwad Size: " + length.ToString());
+                }
+            }
         }
+
+        public void CreateShortcut(String LnkName, String Target)
+        {
+            object shDesktop = (object)"Desktop";
+            shrtcut.WshShell shell = new shrtcut.WshShell();
+            //string shortcutAddress = (string)shell.SpecialFolders.Item(ref shDesktop) + @"\"+LnkName;
+            string shortcutAddress = LnkName;
+            shrtcut.IWshShortcut shortcut = (shrtcut.IWshShortcut)shell.CreateShortcut(shortcutAddress);
+            shortcut.Description = "New shortcut for a Notepad";
+            shortcut.Hotkey = "Ctrl+Shift+N";
+            //shortcut.TargetPath = Environment.GetFolderPath(Environment.SpecialFolder.System) + @"\notepad.exe";
+            shortcut.TargetPath = Target;
+            shortcut.IconLocation = "C:\\Users\\Dan\\Desktop\\Doom Project\\Data\\Script Settings\\DoomGenIcon2.ico";
+            shortcut.WorkingDirectory = Path.GetDirectoryName(Target);
+            shortcut.Save();
+        }
+
         private void listBox_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
@@ -103,31 +144,231 @@ namespace DoomGenV1
                 listBox1.Items.Add((s[i]));
             //listBox1.Items.Add(Path.GetFileName(s[i]));
         }
-         
+
         private void button1_Click(object sender, EventArgs e)
         {
+
+            //CreateShortcut("GenerateDoom");
             //Generate Shortcut for generator -> launch game
             //
+            DeclareVars frm1 = new DeclareVars();
 
-            ///This needs to generate a vbscript file to randomly choose things each time the user runs it.
+            
+
+           //Create New Program/Script Directory/
             string CurrentDir = Directory.GetCurrentDirectory();
+            int directoryCount = 0;
+            if (Directory.Exists(CurrentDir + @"\Generators\"))
+            {
+                directoryCount = System.IO.Directory.GetDirectories(CurrentDir + @"\Generators\").Length;
+            }
+            else {
+                Directory.CreateDirectory(CurrentDir + @"\Generators\");
+                directoryCount = 0;
+            }
+            directoryCount += 1;
+
+            /*
+            int ScampCount = 0;
+            string ScriptDir = Directory.CreateDirectory(CurrentDir + @"\Shortcuts\Shortcut" + directoryCount.ToString()).ToString();
+            if (Directory.Exists(ScriptDir + @"\Campaigns\"))
+            {
+                ScampCount = System.IO.Directory.GetDirectories(ScriptDir + @"\Campaigns\").Length;
+            }
+            else
+            {
+                Directory.CreateDirectory(ScriptDir + @"\Campaigns\");
+                ScampCount = 0;
+            }
+            ScampCount += 1;
+            string ScampDir = Directory.CreateDirectory(ScriptDir + "\\Campaigns\\"+"Campaign " + ScampCount.ToString()).ToString();
+            */
+
+            string ScriptDir = Directory.CreateDirectory(CurrentDir + @"\Generators\Generator" + directoryCount.ToString()).ToString();
+            if (Directory.Exists(ScriptDir + @"\Campaigns\"))
+            {
+                //ScampCount = System.IO.Directory.GetDirectories(ScriptDir + @"\Campaigns\").Length;
+            }
+            else
+            {
+                Directory.CreateDirectory(ScriptDir + @"\Campaigns\");
+                //ScampCount = 0;
+            }
+
+            ///////////////////
+
             string text =
             "my name is " + "\n" + "dan";
 
-            string scriptgen = "IwadStr = \"" + IwadTextBox.Text + "\"\n";
+            string scriptgen = "IwadStr = \"\"\"" + IwadTextBox.Text + "\"\"\" " + "\n";
             scriptgen += "DoomStr = \"" + DoomExeTextBox.Text + "\"\n";
+
+
+            scriptgen += "randomize \n";
+            
+            if (listBox3.Items.Count > 0)
+            {
+                scriptgen += "Dim ObArr(" + (listBox3.Items.Count - 1) + ")\n";
+                foreach (var listBoxItem in listBox3.Items)
+                {
+                    scriptgen += "ObArr(" + listBox3.Items.IndexOf(listBoxItem) + ") = \"" + listBoxItem + "\"\n";
+                }
+                scriptgen += "ObPick = Int(rnd*" + (listBox3.Items.Count) + ") \n";
+                scriptgen += "Oblige = ObArr(ObPick) \n";
+                //scriptgen += "msgBox Oblige \n";
+                //string MoveLine = " \"@MOVE \"\"\" & Cstr(CampCount) & \".wad\"\" \" & \"\"\"\" & Cstr(CampDir+\"\\Campaign \"+Cstr(CampCount)) & \"\\\"\"\" & vbCrLf & ";
+            }
+            else
+            {
+                scriptgen += "ObPick = \"\"\n";
+            }
+            
+            if (listBox4.Items.Count > 0)
+            {
+                scriptgen += "Dim MusArr(" + (listBox4.Items.Count - 1) + ")\n";
+                foreach (var listBoxItem in listBox4.Items)
+                {
+                    scriptgen += "MusArr(" + listBox4.Items.IndexOf(listBoxItem) + ") = \"" + listBoxItem + "\"\n";
+                }
+                scriptgen += "MusPick = Int(rnd*" + listBox4.Items.Count + ") \n";
+                scriptgen += "Music = MusArr(MusPick)\n";
+
+            }
+            else
+            {
+                scriptgen += "MusPick = \"\"\n";
+            }
+            
+            if (listBox2.Items.Count > 0)
+            {
+                scriptgen += "AdArr(" + (listBox2.Items.Count - 1) + ")\n";
+                foreach (var listBoxItem in listBox2.Items)
+                {
+                    scriptgen += "AdArr(" + listBox2.Items.IndexOf(listBoxItem) + ") = \"" + listBoxItem + "\"\n";
+                }
+                scriptgen += "AddPick = Int(rnd*" + listBox2.Items.Count + ") \n";
+                scriptgen += "AddWad = AdArr(AddPick) \n";
+            }
+            else
+            {
+                scriptgen += "AddPick = \"\"\n";
+            }
+
+            scriptgen += "Wads = \"\"";
+            foreach (var listBoxItem in listBox1.Items)
+            {
+                if (listBox1.Items.IndexOf(listBoxItem) < (listBox1.Items.Count - 1))
+                {
+                    scriptgen += "\"" + listBoxItem + "\"\"\" & \" \"";
+                }
+                else
+                {
+                    scriptgen += "\"" + listBoxItem + "\"\"\"";
+                }
+            }
+            scriptgen += "\n";
+
             scriptgen += "Dim FSO \n" + "Set FSO = CreateObject(\"Scripting.FileSystemObject\")\n";
             scriptgen += "CurrentDirectory = FSO.GetAbsolutePathName(\".\")\n";
+
+            if (radioButton1.Checked == true)
+            {
+                scriptgen += "ConfigPath = " + "\"" + textBox4.Text + "\"" + "\n"; 
+            }
+
+            if (radioButton5.Checked == true) //Build & Control Campaign Count
+            {
+                scriptgen += "CurrentDirectory = FSO.GetAbsolutePathName(\".\")\n";
+                scriptgen += "CampCountFile = FSO.BuildPath(CurrentDirectory, \"\\CampaignCount.txt\")\n";
+                scriptgen += "CampCount = 1 \n";
+                scriptgen += "If FSO.FileExists(CampCountFile) Then \n";
+                scriptgen += " Set objFileToRead = CreateObject(\"Scripting.FileSystemObject\").OpenTextFile(CampCountFile,1)\n";
+                scriptgen += "Dim strLine \n";
+                scriptgen += "do while not objFileToRead.AtEndOfStream \n";
+                scriptgen += "strLine = objFileToRead.ReadLine() \n";
+                scriptgen += "CampCount = strLine \n";
+                scriptgen += "loop \n";
+                scriptgen += "OldCampCount = CampCount \n";
+                scriptgen += "CampCount = CampCount + 1 \n";
+                scriptgen += "outFile3= CampCountFile \n";
+                scriptgen += "Set objFile = FSO.CreateTextFile(outFile3,True) \n";
+                scriptgen += "objFile.Write Cstr(CampCount) \n";
+                scriptgen += "objFile.Close \n";
+                scriptgen += "objFileToRead.Close \n";
+                scriptgen += "Set objFileToRead = Nothing \n";
+                scriptgen += "Else \n";
+                scriptgen += "outFile3= CampCountFile \n";
+                scriptgen += "Set objFile = FSO.CreateTextFile(outFile3,True) \n";
+                scriptgen += "objFile.Write \"1\" \n";
+                scriptgen += "objFile.Close \n";
+                scriptgen += "End If \n";
+                scriptgen += "FSO.CreateFolder Cstr(\"Campaigns\"+\"\\Campaign \"+Cstr(CampCount)+\"\\\")\n";
+            }
+
+            //string scriptgen = "Set objShell = WScript.CreateObject(\"WScript.Shell\")\n";
+            //scriptgen += "objShell.Run \"\"\"" + DoomExeTextBox.Text + "\"\" -iwad \"\"" + IwadTextBox.Text + "\"\"" + " -file brutalv21.pk3\", 1, True";
+
+            if (radioButton2.Checked == true)
+            {
+                scriptgen += "intCount = 0 \n";
+                scriptgen += "Function fCount(path, ftype1, ftype2)\n";
+                scriptgen += "Set objFolder = FSO.GetFolder(path)\n";
+                scriptgen += "Set colFiles = objFolder.Files\n";
+                scriptgen += "dim FileList()\n";
+                scriptgen += "ReDim Preserve FileList(0)\n";
+                scriptgen += "For Each objFile in colFiles\n";
+                scriptgen += "ReDim Preserve FileList(UBound(FileList) + 1)\n";
+                scriptgen += "  If LCase(FSO.GetExtensionName(objFile.Name)) = ftype1 Or LCase(FSO.GetExtensionName(objFile.Name)) = ftype2 Then 'Count only ftype files\n";
+                scriptgen += "  FileList(intCount) = objFile.Name \n";
+                scriptgen += "intCount = intCount + 1\n";
+                scriptgen += "End If\n Next \n randomize\n fCount=FileList(Int(rnd*intCount)) \n End Function \n";
+                scriptgen += "ConfigPath = FSO.BuildPath(\""+textBox5.Text+"\",fCount(\"" + textBox5.Text + "\",\"txt\",\"cfg\"))" + "\n";
+
+                
+            }
+
+            scriptgen += "obwad = FSO.BuildPath(CurrentDirectory,\"\\Campaigns\\Campaign \"" + " & Cstr(CampCount) & " + "\"\\Campaign\" & " + "Cstr(CampCount)" + "& \".wad\")\n";
+
+            scriptgen += "save_path = FSO.BuildPath(CurrentDirectory,\"\\Campaigns\\Campaign \"" + " & Cstr(CampCount) \n";
+
+
             scriptgen += "GenBat = FSO.BuildPath(CurrentDirectory, \"\\GenerateLevels.bat\")\n";
             scriptgen += "outFile=GenBat\n";
             scriptgen += "Set objFile = FSO.CreateTextFile(outFile,True)\n";
-            scriptgen += "objFile.Write \"\"\"" + DoomExeTextBox.Text + "\"\"\"\n";
+            scriptgen += "objFile.Write " + "\"\"\"\" & Oblige & \"\"\"\" & " + "\" --batch Campaign" + "\" & CampCount & \"" + ".wad " + "\" & " + "\"-load "+ "\"\"\" & " + "ConfigPath" + " & \"\"\"\"" + " & " + "vbCrLf & ";
+            scriptgen += " \"MOVE \"\"\" & \"Campaign\" & Cstr(CampCount) & \".wad\"\" \" & \"\"\"\" & Cstr(\"Campaigns\"+\"\\Campaign \"+Cstr(CampCount)) & \"\\\"\"\" & vbCrLf & ";
+
+            
+
+            scriptgen += "\"\"\"\"" + " & DoomStr & " + "\"\"\"\"" + " & \" -Iwad \" " + "& IwadStr & " + "\" -file \" & Wads" + " & \" \" & \"\"\"\" & Music & \"\"\"\" " + " & AddPick & " + " \" \" & \"\"\"\" & obwad & \"\"" + "\" +save_dir \" & " + "\"\"\"\"" + " & save_path & " + "\"\"\"\"" + "\n";
             scriptgen += "objFile.Close\n";
             scriptgen += "Set shell = CreateObject(\"WScript.Shell\")\n";
             scriptgen += "shell.Run \"GenerateLevels.bat\"";
+
+            File.WriteAllTextAsync(ScriptDir + "\\GenShortcut.vbs", scriptgen);
+
             File.WriteAllTextAsync(CurrentDir + @"\Level Gen\" + "GenShortcut.vbs", scriptgen);
-            System.Diagnostics.Process.Start(@"cscript" + CurrentDir + @"\Level Gen\" + "GenShortcut.vbs");
             File.WriteAllTextAsync(CurrentDir + @"\Level Gen\" + "WriteText.bat", text);
+            //System.Diagnostics.Process.Start(@"C:\my folder\import.vbs");
+            //System.Diagnostics.Process.Start(CurrentDir + @"\Level Gen\" + "GenShortcut.vbs");
+            //System.Diagnostics.Process.Start(@"cscript GenShortcut.vbs");
+            //System.Diagnostics.Process.Start(@"cscript" + CurrentDir + "\\Level Gen\\" + "GenShortcut.vbs");
+
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.Filter = "Shortcut files (*.lnk)|*.lnk";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                //MessageBox.Show(saveFileDialog1.FileName);
+                CreateShortcut(saveFileDialog1.FileName, ScriptDir + "\\GenShortcut.vbs");
+            }
+
+            System.IO.Directory.CreateDirectory("Campaigns");
+            MessageBox.Show("Shortcut saved.");
+
         }
 
         private void label2_Click(object sender, EventArgs e)
@@ -338,7 +579,7 @@ namespace DoomGenV1
 
             }
 
-            CampC += 1;
+            
             System.IO.StreamWriter SaveFile2 = new System.IO.StreamWriter(frm1.cPath);
             SaveFile2.WriteLine(CampC.ToString());
             SaveFile2.Close();
@@ -428,22 +669,34 @@ namespace DoomGenV1
                 ObString = "";
                 CampPath = "";
             }
+            else
+            {
+                CampC += 1;
+            }
 
             ////Save Folder///////////////////////////////////////
             ///
             string savePath = "";
+            string batSavePath = "";
             if (radioButton5.Checked == true) { 
             savePath = "+set save_path " + "\"" + campFolder + "\"" + " +save_dir " + "\"" + campFolder + "\"";
+            batSavePath = "+set save_path " + "\"%~dp0\\\"" + " +save_dir " + "\"%~dp0\\";
             }
 
             //string text =
             // "my name is " + "\n" + "dan";
+            
             string iwadstr = " -iwad \"" + IwadTextBox.Text + "\"";
             string wads = "\"" + CampPath + "\" ";
             string DoomEXE = "\"" + DoomExeTextBox.Text + "\"";
             string allItems = string.Join("\" \"", listBox1.Items.OfType<object>());
             wads += "\"" + allItems + "\"";
-            string writeString = ObString + DoomEXE + iwadstr + " -file " + wads + " " + MusicString + " " + savePath;
+            string writeString = ObString + DoomEXE + iwadstr + " -file " + wads + " " + MusicString + " " + cmdAdd.Text + " " + savePath;
+            string batString = DoomEXE + iwadstr + " -file " + wads + " " + MusicString + " " + batSavePath;
+            if (checkBox6.Checked == true)
+            {
+                File.WriteAllTextAsync(campFolder + "\\Start.bat", batString);
+            }
             File.WriteAllTextAsync(CurrentDir + @"\Level Gen\" + "DoomGen.bat", writeString);
             System.Diagnostics.Process.Start(CurrentDir + @"\Level Gen\" + "DoomGen.bat");
 
@@ -657,10 +910,38 @@ namespace DoomGenV1
             const string sPath = "save.txt";
 
             System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(sPath);
+
+            SaveFile.WriteLine("Iwad=" + IwadTextBox.Text);
+            SaveFile.WriteLine("DoomExe=" + DoomExeTextBox.Text);
+            SaveFile.WriteLine("CloseAfterLaunch=" + checkBox1.Checked.ToString());
+            SaveFile.WriteLine("EnableOblige=" + checkBox2.Checked.ToString());
             foreach (var item in listBox1.Items)
             {
-                SaveFile.WriteLine(item);
+                SaveFile.WriteLine("Wad="+item);
             }
+            foreach (var item in listBox3.Items)
+            {
+                SaveFile.WriteLine("Oblige=" + item);
+            }
+            foreach (var item in listBox4.Items)
+            {
+                SaveFile.WriteLine("Music=" + item);
+            }
+            foreach (var item in listBox2.Items)
+            {
+                SaveFile.WriteLine("rWad=" + item);
+            }
+
+            SaveFile.WriteLine("VanillaMusic=" + checkBox3.Checked.ToString());
+            SaveFile.WriteLine("NoWad=" + checkBox4.Checked.ToString());
+
+            SaveFile.WriteLine("NewSave=" + radioButton5.Checked.ToString());
+
+            SaveFile.WriteLine("WadLength=" + comboBox1.SelectedItem);
+
+            SaveFile.WriteLine("UseConfigPool=" + radioButton2.Checked.ToString());
+            SaveFile.WriteLine("ConfigFile=" + textBox4.Text);
+            SaveFile.WriteLine("ConfigPool=" + textBox5.Text);
 
             SaveFile.Close();
 
@@ -746,6 +1027,10 @@ namespace DoomGenV1
             Properties.Settings.Default.ConfigFile = radioButton1.Checked;
 
             Properties.Settings.Default.ObligeEnabled = checkBox2.Checked;
+
+            Properties.Settings.Default.MakeShrtCt = checkBox6.Checked; 
+
+            Properties.Settings.Default.AdditionalCmds = cmdAdd.Text;
 
             //Properties.Settings.Default.Save();
 
@@ -863,6 +1148,8 @@ namespace DoomGenV1
             {
                 if (tabControl1.TabPages.Contains(tabPage4))
                 { tabControl1.TabPages.Remove(tabPage4); }
+
+                button1.Visible = false;
             }
             else
             {
@@ -870,6 +1157,8 @@ namespace DoomGenV1
                     
                 }
                 else { tabControl1.TabPages.Insert(1, tabPage4); }
+
+                button1.Visible = true;
             }
         }
 
@@ -886,6 +1175,11 @@ namespace DoomGenV1
                 {
                     if ((myStream = f.OpenFile()) != null)
                     {
+                        listBox1.Items.Clear();
+                        listBox3.Items.Clear();
+                        IwadTextBox.Text = "";
+                        DoomExeTextBox.Text = "";
+
                         using (myStream)
                         {
                             System.IO.StreamReader file =
@@ -893,8 +1187,96 @@ namespace DoomGenV1
                             while ((line = file.ReadLine()) != null)
                             {
                                 //MessageBox.Show(line);
-                                var result = line.Substring(line.IndexOf('=')+1);
-                                MessageBox.Show(result);
+                                //var result = line.Substring(line.IndexOf('=')+1);
+
+                                //listbox1.Items.Clear();
+                                if (line.Contains("Iwad="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    IwadTextBox.Text=result;
+                                }
+                                if (line.Contains("DoomExe="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    DoomExeTextBox.Text = result;
+                                }
+                                if (line.Contains("CloseAfterLaunch="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    checkBox1.Checked = Convert.ToBoolean(result);
+                                }
+                                if (line.Contains("EnableOblige="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    checkBox2.Checked = Convert.ToBoolean(result);
+                                }
+                                if (line.Contains("Wad=")) {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    listBox1.Items.Add(result);
+                                }
+                                if (line.Contains("Oblige="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    listBox3.Items.Add(result);
+                                }
+                                if (line.Contains("NewSave="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    radioButton5.Checked = Convert.ToBoolean(result);
+                                    if (radioButton5.Checked) { radioButton4.Checked = false; } else { radioButton4.Checked = true; }
+                                }
+                                if (line.Contains("WadLength="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    comboBox1.SelectedItem = result;
+                                }
+                                if (line.Contains("UseConfigPool="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    radioButton2.Checked = Convert.ToBoolean(result);
+                                    if (radioButton2.Checked) { radioButton1.Checked = false; } else { radioButton1.Checked = true; }
+                                }
+                                if (line.Contains("ConfigFile="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    textBox4.Text = result;
+                                }
+                                if (line.Contains("ConfigPool="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    textBox5.Text = result;
+                                }
+                                if (line.Contains("Music="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    listBox4.Items.Add(result);
+                                }
+                                if (line.Contains("rWad="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    listBox2.Items.Add(result);
+                                }
+                                if (line.Contains("VanillaMusice="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    checkBox3.Checked = Convert.ToBoolean(result);
+                                }
+                                if (line.Contains("NoWad="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    checkBox4.Checked = Convert.ToBoolean(result);
+                                }
+                                if (line.Contains("NoWad="))
+                                {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    cmdAdd.Text = result;
+                                }
+                                if (line.Contains("MakeShortcut=")) {
+                                    var result = line.Substring(line.IndexOf('=') + 1);
+                                    checkBox6.Checked = Convert.ToBoolean(result);
+                                }
+                                
+                                //MessageBox.Show(result);
                                 //System.Console.WriteLine(line);
 
                             }
@@ -909,6 +1291,103 @@ namespace DoomGenV1
             }
 
             
+        }
+
+        private void button26_Click(object sender, EventArgs e)
+        {
+            Stream myStream;
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.Filter = "ozdl files (*.ozdl)|*.ozdl";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                if ((myStream = saveFileDialog1.OpenFile()) != null)
+                {
+                    System.IO.StreamWriter SaveFile = new System.IO.StreamWriter(myStream);
+
+                    SaveFile.WriteLine("Iwad=" + IwadTextBox.Text);
+                    SaveFile.WriteLine("DoomExe=" + DoomExeTextBox.Text);
+                    SaveFile.WriteLine("CloseAfterLaunch=" + checkBox1.Checked.ToString());
+                    SaveFile.WriteLine("EnableOblige=" + checkBox2.Checked.ToString());
+                    foreach (var item in listBox1.Items)
+                    {
+                        SaveFile.WriteLine("Wad=" + item);
+                    }
+                    foreach (var item in listBox3.Items)
+                    {
+                        SaveFile.WriteLine("Oblige=" + item);
+                    }
+                    foreach (var item in listBox4.Items)
+                    {
+                        SaveFile.WriteLine("Music=" + item);
+                    }
+                    foreach (var item in listBox2.Items)
+                    {
+                        SaveFile.WriteLine("rWad=" + item);
+                    }
+
+                    SaveFile.WriteLine("VanillaMusic=" + checkBox3.Checked.ToString());
+                    SaveFile.WriteLine("NoWad=" + checkBox4.Checked.ToString());
+
+                    SaveFile.WriteLine("NewSave=" + radioButton5.Checked.ToString());
+
+                    SaveFile.WriteLine("WadLength=" + comboBox1.SelectedItem);
+
+                    SaveFile.WriteLine("UseConfigPool=" + radioButton2.Checked.ToString());
+                    SaveFile.WriteLine("ConfigFile=" + textBox4.Text);
+                    SaveFile.WriteLine("ConfigPool=" + textBox5.Text);
+
+                    SaveFile.WriteLine("AddCommands=" + cmdAdd.Text);
+
+                    SaveFile.WriteLine("MakeShortcut=" + checkBox6.Checked.ToString());
+
+                    SaveFile.Close();
+
+                    MessageBox.Show("Settings saved.");
+
+                }
+
+            }
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("https://www.doomworld.com/idgames/?random") { UseShellExecute = true });
+            //https://www.doomworld.com/idgames/?random
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("This will delete all files in the \"Campaigns\" directory, proceed?", "Warning", MessageBoxButtons.YesNo);
+            if (dialogResult == DialogResult.Yes)
+            {
+                string path = @"Campaigns";
+
+                DirectoryInfo directory = new DirectoryInfo(path);
+
+                foreach (FileInfo file in directory.GetFiles())
+                {
+                    file.Delete();
+                }
+
+                foreach (DirectoryInfo dir in directory.GetDirectories())
+                {
+                    dir.Delete(true);
+                }
+            }
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
