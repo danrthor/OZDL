@@ -1,5 +1,0 @@
-C:\Users\Dan\source\repos\DoomGenV1\DoomGenV1\bin\Release\netcoreapp3.1\publish\DoomGenV1.exe
-C:\Users\Dan\source\repos\DoomGenV1\DoomGenV1\bin\Release\netcoreapp3.1\publish\DoomGenV1.dll
-C:\Users\Dan\source\repos\DoomGenV1\DoomGenV1\bin\Release\netcoreapp3.1\publish\DoomGenV1.deps.json
-C:\Users\Dan\source\repos\DoomGenV1\DoomGenV1\bin\Release\netcoreapp3.1\publish\DoomGenV1.runtimeconfig.json
-C:\Users\Dan\source\repos\DoomGenV1\DoomGenV1\bin\Release\netcoreapp3.1\publish\DoomGenV1.pdb
