@@ -57,6 +57,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="OptionOverride.ToolTip" xml:space="preserve">
+    <value>If this checkbox is enabled, the program will look for a "-- Config Folder :" tag in the OPTIONS.txt file, which will point it to a config pool. Example: -- Config Folder =C:\Data\Configs\7.7 BrutalDoom\ This is useful for getting configs for specific addons.</value>
+  </data>
   <assembly alias="System.Drawing.Common" name="System.Drawing.Common, Version=4.0.2.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing.Common" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

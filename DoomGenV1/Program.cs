@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-class DeclareVars
+public class DeclareVars
 {
     public string WriteString = "";
 
@@ -15,7 +15,7 @@ class DeclareVars
     public int CampCount = 0;
 
     public string cPath = "CampaignCount.txt";
-
+    public string mynewarg = "";
     public DeclareVars()
     {
     }
@@ -36,13 +36,17 @@ namespace DoomGenV1
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        public static void Main(string[] args)
         {
-
+            if (args.Length > 0)
+            {
+                MessageBox.Show(args[0]);
+            }
+            //MessageBox.Show("Shortcut saved.");
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Form1(args));
         }
     }
 }
